@@ -1,6 +1,6 @@
     // ── Floating hearts background
     const hb = document.getElementById('heartsBg');
-    const emojis = ['🌸','💕','✨','🌹','💖','🎀','💗','👑','🎈','🎂','🎂','🎂','🎁','🥂','👸','🫶','🎂'];
+    const emojis = ['🌸','💕','✨','🌹','💖','🎀','💗','👑','🎈','🎂','🎂','🎂','🎁','🥂','🤴🏻','🫶','🎂'];
     for (let i = 0; i < 35; i++) {
       const el = document.createElement('div');
       el.className = 'heart-particle';
