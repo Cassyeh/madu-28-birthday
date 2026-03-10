@@ -1072,7 +1072,6 @@ body {
   height: 90%;
   object-fit: cover;
   position: absolute;
-  inset: 0;
   border-radius: 20px;
 }
 
