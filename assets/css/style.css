@@ -1,0 +1,1550 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --rose: #c8536a;
+  --rose-lt: #e8899a;
+  --rose-dk: #8e2d3f;
+  --blush: #f5dde3;
+  --cream: #fdf6f0;
+  --gold: #c9973a;
+  --gold-lt: #f0d080;
+  --text: #3a2030;
+  --muted: #9a7080;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Lora", serif;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── FLOATING HEARTS BACKGROUND ─── */
+.hearts-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.heart-particle {
+  position: absolute;
+  bottom: -60px;
+  font-size: 1.2rem;
+  opacity: 0;
+  animation: floatHeart linear infinite;
+}
+
+@keyframes floatHeart {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(25deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* ─── CARD SCENE ─── */
+#card-scene {
+  position: relative;
+  z-index: 10;
+  perspective: 1800px;
+  width: min(380px, 90vw);
+  height: min(500px, 80vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+  margin-bottom: 100px; /* space for pull tag + string below card */
+}
+
+#card-scene.hide {
+  opacity: 0;
+  transform: scale(0.88);
+  pointer-events: none;
+}
+
+/* ─── THE CARD WRAPPER (book spine on left) ─── */
+.card-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 30px 60px rgba(140, 50, 70, 0.28));
+}
+
+/* ─── CARD BACK PANEL (stays in place — right page / inside right) ─── */
+.card-back-panel {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #fff8fa 0%, #fdf0f3 100%);
+  border: 1px solid rgba(200, 83, 106, 0.15);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  text-align: center;
+  z-index: 1;
+}
+
+.card-back-heart {
+  font-size: 2.5rem;
+  margin-bottom: 1.2rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+.card-back-panel h2 {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  color: var(--rose-dk);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.card-back-panel p {
+  font-family: "Lora", serif;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ─── CARD FRONT COVER (swings open like a book cover from left hinge) ─── */
+.card-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 1.4s cubic-bezier(0.55, 0, 0.15, 1);
+  border-radius: 4px;
+}
+
+/* When opened: swing cover 170deg to the left (like opening a book) */
+.card-cover.book-open {
+  transform: perspective(1800px) rotateY(-170deg);
+}
+
+/* Front face of cover */
+.cover-front {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  background: linear-gradient(160deg, #f9eef2 0%, #f2dae0 40%, #ead0d8 100%);
+  border: 1px solid rgba(200, 83, 106, 0.2);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Polka dot texture */
+.cover-front::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    rgba(200, 83, 106, 0.08) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* Back face of cover (seen when fully swung open) */
+.cover-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  background: linear-gradient(160deg, #fdf3f5 0%, #fae8ec 100%);
+  border-radius: 4px;
+  border-right: 3px solid rgba(200, 83, 106, 0.12);
+}
+
+/* Spine shadow on left edge */
+.card-cover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 12px;
+  background: linear-gradient(to right, rgba(100, 20, 40, 0.18), transparent);
+  border-radius: 4px 0 0 4px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ─── RIBBON — split halves ─── */
+/* We use two half-ribbons that peel apart from the center */
+
+/* Horizontal ribbon: two halves clipped left/right */
+.ribbon-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 52px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Each half is a pseudo-element on a wrapper div */
+.ribbon-half-left,
+.ribbon-half-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(90deg, var(--rose-dk), var(--rose));
+  box-shadow: 0 4px 18px rgba(140, 45, 63, 0.35);
+  transition:
+    transform 0.6s cubic-bezier(0.55, 0, 0.45, 1),
+    opacity 0.6s ease;
+  overflow: hidden;
+}
+
+.ribbon-half-left {
+  left: 0;
+  transform-origin: left center;
+}
+.ribbon-half-right {
+  right: 0;
+  background: linear-gradient(90deg, var(--rose), var(--rose-dk));
+  transform-origin: right center;
+}
+
+/* Shimmer on each half */
+.ribbon-half-left::after,
+.ribbon-half-right::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.15) 60%,
+    transparent 90%
+  );
+}
+
+.ribbon-band.split .ribbon-half-left {
+  transform: translateX(-110%);
+  opacity: 0;
+}
+.ribbon-band.split .ribbon-half-right {
+  transform: translateX(110%);
+  opacity: 0;
+}
+
+/* Vertical ribbon: two halves split top/bottom */
+.ribbon-vert {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.ribbon-vert-top,
+.ribbon-vert-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, var(--rose-dk), var(--rose));
+  box-shadow: 4px 0 18px rgba(140, 45, 63, 0.25);
+  transition:
+    transform 0.6s cubic-bezier(0.55, 0, 0.45, 1) 0.05s,
+    opacity 0.6s ease 0.05s;
+}
+
+.ribbon-vert-top {
+  top: 0;
+  transform-origin: center top;
+}
+.ribbon-vert-bottom {
+  bottom: 0;
+  background: linear-gradient(180deg, var(--rose), var(--rose-dk));
+  transform-origin: center bottom;
+}
+
+.ribbon-vert.split .ribbon-vert-top {
+  transform: translateY(-110%);
+  opacity: 0;
+}
+.ribbon-vert.split .ribbon-vert-bottom {
+  transform: translateY(110%);
+  opacity: 0;
+}
+
+/* ─── BOW — SVG satin bow ─── */
+.ribbon-bow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 8;
+  width: 180px;
+  height: 162px;
+  transition:
+    opacity 0.45s ease 0.1s,
+    transform 0.45s ease 0.1s;
+  pointer-events: none;
+  margin-top: -8px;
+}
+
+.ribbon-bow.bow-fly {
+  transform: translate(-50%, calc(-50% - 340px)) scale(0.4);
+  opacity: 0;
+}
+
+/* unused div bow parts — hidden */
+.bow-loop-left,
+.bow-loop-right,
+.bow-tail-left,
+.bow-tail-right,
+.bow-knot {
+  display: none;
+}
+
+/* ─── PULL RIBBON BUTTON ─── */
+.ribbon-pull {
+  position: absolute;
+  bottom: -90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  user-select: none;
+  animation: bobble 2.2s ease-in-out infinite;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes bobble {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-7px);
+  }
+}
+
+/* Pull-down animation: tag yanks downward, string stretches */
+.ribbon-pull.pulling {
+  animation: pullDown 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes pullDown {
+  0% {
+    transform: translateX(-50%) translateY(0);
+  }
+  30% {
+    transform: translateX(-50%) translateY(8px);
+  }
+  60% {
+    transform: translateX(-50%) translateY(40px);
+  }
+  80% {
+    transform: translateX(-50%) translateY(55px);
+  }
+  100% {
+    transform: translateX(-50%) translateY(60px);
+    opacity: 0;
+  }
+}
+
+.ribbon-pull-tag {
+  background: var(--gold);
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.3rem;
+  border-radius: 2px;
+  box-shadow: 0 4px 14px rgba(180, 130, 0, 0.35);
+  white-space: nowrap;
+  transition: background 0.2s;
+  order: 2; /* tag below string */
+}
+
+.ribbon-pull:hover .ribbon-pull-tag {
+  background: #b8841f;
+}
+
+/* String — sits above the tag, connects to bow */
+.ribbon-pull-string {
+  width: 2px;
+  height: 52px;
+  background: linear-gradient(to bottom, var(--gold-lt), var(--gold));
+  border-radius: 2px;
+  order: 1;
+  transition: height 0.55s ease;
+}
+
+/* Stretch the string as it pulls */
+.ribbon-pull.pulling .ribbon-pull-string {
+  height: 80px;
+  animation: stretchString 0.55s ease forwards;
+}
+
+@keyframes stretchString {
+  0% {
+    height: 52px;
+    opacity: 1;
+  }
+  60% {
+    height: 90px;
+    opacity: 0.8;
+  }
+  100% {
+    height: 100px;
+    opacity: 0;
+  }
+}
+
+/* ─── CARD FRONT CONTENT ─── */
+.card-illustration {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  pointer-events: none;
+}
+
+.big-bow-emoji {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.card-gift-text {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 1.8rem;
+  color: var(--rose-dk);
+  text-align: center;
+  line-height: 1.2;
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
+}
+
+.card-sub {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose);
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  margin-top: 0.5rem;
+}
+
+/* ─── CONFETTI BURST ─── */
+.confetti-piece {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 2px;
+  animation: confettiFall 2.5s ease-in forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(90vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* ─── HOMEPAGE ─── */
+#homepage {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease 0.6s;
+  background: var(--cream);
+}
+
+#homepage.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.hp-hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft radial background */
+.hp-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% 30%,
+      rgba(232, 137, 154, 0.18) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 80% 80%,
+      rgba(201, 151, 58, 0.08) 0%,
+      transparent 60%
+    );
+  pointer-events: none;
+}
+
+/* Wavy top border */
+.hp-hero::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80'%3E%3Cpath fill='%23f5dde3' fill-opacity='0.5' d='M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z'/%3E%3C/svg%3E")
+    center/cover;
+  pointer-events: none;
+}
+
+.hp-eyebrow {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.2s ease forwards;
+}
+
+.hp-title {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(3.25rem, 8vw, 7rem);
+  font-weight: 700;
+  font-style: italic;
+  color: #e3c011;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.4s ease forwards;
+}
+
+.hp-hearts {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.6s ease forwards;
+  letter-spacing: 0.5rem;
+}
+
+.hp-sub {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: black;
+  min-width: 360px;
+  max-width: 640px;
+  line-height: 1.8;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.8s ease forwards;
+}
+
+.hp-scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  right: 1.25rem;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rose);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  animation: fadeUp 0.7s 1.2s ease forwards;
+  writing-mode: vertical-rl;
+  flex-direction: row;
+}
+
+.scroll-arrow {
+  width: 48px;
+  height: 4px;
+  background: linear-gradient(to right, var(--rose), transparent);
+  animation: scrollPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scaleY(0.7);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── HOMEPAGE SECTIONS PLACEHOLDER ─── */
+.hp-section {
+  padding: 5rem 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hp-section h2 {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 2.2rem;
+  color: var(--rose-dk);
+  margin-bottom: 1rem;
+}
+
+.hp-section p {
+  color: var(--muted);
+  line-height: 1.85;
+  font-size: 1rem;
+}
+
+.section-divider {
+  text-align: center;
+  color: var(--rose-lt);
+  font-size: 2rem;
+  letter-spacing: 0.8rem;
+  padding: 1rem 0;
+}
+/* ─── CALENDAR ─── */
+.cal-section {
+  padding: 5rem 2rem 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cal-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose);
+}
+
+.cal-heading {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 2rem;
+  color: var(--rose-dk);
+  text-align: center;
+}
+
+.calendar {
+  width: min(340px, 88vw);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 60px rgba(140, 45, 63, 0.18),
+    0 4px 16px rgba(140, 45, 63, 0.12);
+  font-family: "Montserrat", sans-serif;
+}
+
+.cal-header {
+  background: var(--rose);
+  padding: 1.1rem 1.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cal-header-month {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cal-header-rings {
+  display: flex;
+  gap: 10px;
+}
+
+.cal-ring {
+  width: 14px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  position: relative;
+}
+
+.cal-ring::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 8px;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+}
+
+.cal-body {
+  background: white;
+  padding: 0.6rem 1rem 1.4rem;
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 0.5rem;
+}
+
+.cal-weekdays span {
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.4rem 0;
+}
+
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-day {
+  text-align: center;
+  padding: 0.45rem 0;
+  font-size: 0.82rem;
+  color: #555;
+  border-radius: 50%;
+  cursor: default;
+  transition: background 0.2s;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-day.empty {
+  opacity: 0;
+  pointer-events: none;
+}
+.cal-day.muted {
+  color: #ccc;
+}
+
+.cal-day.today {
+  background: var(--rose);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(200, 83, 106, 0.45);
+  animation: calPulse 2s ease-in-out infinite;
+  position: relative;
+}
+
+.cal-day.today::after {
+  content: "🎂";
+  position: absolute;
+  top: -18px;
+  font-size: 0.95rem;
+  animation: calPulse 2s ease-in-out infinite;
+}
+
+@keyframes calPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.cal-footer {
+  background: var(--blush);
+  padding: 0.9rem 1.5rem;
+  text-align: center;
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--rose-dk);
+}
+/* ─── MADU @ 28 BENTO GRID ─── */
+.joys-section {
+  padding: 5rem 2rem 7rem;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.joys-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.joys-eyebrow {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 0.75rem;
+}
+
+.joys-title {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  color: #e3c011;
+  line-height: 1.1;
+}
+
+.joys-subtitle {
+  font-family: "Lora", serif;
+  font-size: 1rem;
+  color: black;
+  margin-top: 0.75rem;
+}
+
+/* ── Colour palette — 5 colours ── */
+.bc1 {
+  --bc: #d4b8e8;
+  --bc-dark: #5a2080;
+}
+.bc2 {
+  --bc: #c4d8e8;
+  --bc-dark: #1a4a6e;
+}
+.bc3 {
+  --bc: #d8e8c4;
+  --bc-dark: #2d5a1a;
+}
+.bc4 {
+  --bc: #e8dfc4;
+  --bc-dark: #6e4e1a;
+}
+.bc5 {
+  --bc: #ff0000;
+  --bc-dark: #ffffff;
+}
+
+/* Gold metallic */
+.bc-gold {
+  --bc-dark: #3a2000;
+  background: linear-gradient(
+    135deg,
+    #c8960c 0%,
+    #f5d060 20%,
+    #e8b830 35%,
+    #fceea0 50%,
+    #d4a017 65%,
+    #f0c832 80%,
+    #a87800 100%
+  );
+}
+
+/* ── Desktop grid: 12 columns, ~4 per row ── */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+/* Size classes */
+.joy-box {
+  grid-column: span 3;
+  min-height: 180px;
+}
+.joy-box.wide {
+  grid-column: span 4;
+}
+.joy-box.tall {
+  grid-row: span 2;
+}
+.joy-box.big {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+.joy-box.xwide {
+  grid-column: span 6;
+}
+.joy-box.xbig {
+  grid-column: span 6;
+  grid-row: span 2;
+}
+
+/* ── Base box styles ── */
+.joy-box {
+  background: var(--bc);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  user-select: none;
+}
+
+.joy-box:hover {
+  transform: scale(1.04);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+  z-index: 2;
+}
+
+/* ── Confetti dot pattern overlay ── */
+.joy-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.35) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+  background-size:
+    22px 22px,
+    11px 11px;
+  background-position:
+    0 0,
+    5px 5px;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Diagonal shimmer sash ── */
+.joy-box::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 48%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.18) 52%,
+    transparent 70%
+  );
+  transform: skewX(-15deg);
+  transition: left 0.5s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.joy-box:hover::after {
+  left: 120%;
+}
+
+/* ── Number label ── */
+.joy-num {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 700;
+  color: var(--bc-dark);
+  opacity: 0.5;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+  pointer-events: none;
+  position: relative;
+  z-index: 3;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.joy-box:hover .joy-num {
+  opacity: 0.85;
+  transform: scale(1.08);
+}
+
+/* ── Revealed state ── */
+.joy-box.revealed .joy-num {
+  display: none;
+}
+.joy-box.revealed .joy-thumb {
+  display: block;
+}
+.joy-box.revealed::before,
+.joy-box.revealed::after {
+  display: none;
+}
+
+.joy-thumb {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+}
+
+.joy-box.revealed::after {
+  content: attr(data-num);
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: white;
+  background: rgba(0, 0, 0, 0.28);
+  padding: 2px 8px;
+  border-radius: 20px;
+  left: unset;
+  width: auto;
+  height: auto;
+  transform: none;
+  skewx: none;
+  transition: none;
+}
+
+/* ── Tablet: 8 columns ── */
+@media (max-width: 1024px) {
+  .bento {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 12px;
+  }
+  .joy-box {
+    grid-column: span 2;
+    min-height: 150px;
+  }
+  .joy-box.wide {
+    grid-column: span 3;
+  }
+  .joy-box.big {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+  .joy-box.xwide {
+    grid-column: span 4;
+  }
+  .joy-box.xbig {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+}
+
+/* ── Mobile: 6 columns (2–3 per row feel) ── */
+@media (max-width: 640px) {
+  .joys-section {
+    padding: 3rem 1rem 5rem;
+  }
+  .bento {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+  .joy-box {
+    grid-column: span 3;
+    min-height: 120px;
+  }
+  .joy-box.wide {
+    grid-column: span 3;
+  }
+  .joy-box.tall {
+    grid-row: span 2;
+  }
+  .joy-box.big {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+  .joy-box.xwide {
+    grid-column: span 6;
+  }
+  .joy-box.xbig {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+  .joy-num {
+    font-size: 1.8rem;
+  }
+}
+
+/* ─── LIGHTBOX — swipeable ─── */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 10, 15, 0.78);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.lightbox-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.lightbox-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  transform: scale(0.88) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+  position: relative;
+}
+
+.lightbox-overlay.open .lightbox-card {
+  transform: scale(1) translateY(0);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.38);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: background 0.2s;
+}
+.lightbox-close:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+/* ── Slider ── */
+.lb-slider-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--blush);
+  overflow: hidden;
+}
+
+.lb-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lb-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blush);
+  overflow: hidden;
+}
+
+.lb-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.lb-slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lb-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+}
+.lb-placeholder span {
+  font-size: 2.8rem;
+}
+
+/* Prev / next arrows */
+.lb-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.32);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  user-select: none;
+}
+.lb-arrow:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+.lb-arrow.prev {
+  left: 10px;
+}
+.lb-arrow.next {
+  right: 10px;
+}
+.lb-arrow.hidden {
+  display: none;
+}
+
+/* Dot indicators */
+.lb-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.lb-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition:
+    background 0.2s,
+    transform 0.2s;
+  cursor: pointer;
+}
+.lb-dot.active {
+  background: white;
+  transform: scale(1.3);
+}
+
+/* Slide counter */
+.lb-counter {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 3px 9px;
+  border-radius: 20px;
+  z-index: 10;
+}
+.lb-counter.hidden {
+  display: none;
+}
+
+.lightbox-body {
+  padding: 1.3rem 1.8rem 1.8rem;
+  text-align: center;
+}
+
+.lightbox-num {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 0.5rem;
+}
+
+.lightbox-msg {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--rose-dk);
+  line-height: 1.6;
+}
+
+/* ─── HOMEPAGE CONFETTI ─── */
+.hp-confetti {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1;
+  font-size: 0.55rem;
+  border-radius: 2px;
+  opacity: 0;
+  animation: hpConfettiFall linear forwards;
+}
+
+@keyframes hpConfettiFall {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(600deg);
+  }
+}
+/* ─── FOOTER — gift tag ─── */
+.site-footer {
+  background: var(--cream);
+  border-top: 1px solid rgba(200, 83, 106, 0.15);
+  padding: 3.5rem 3rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle dot pattern */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    rgba(200, 83, 106, 0.06) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.footer-tag {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  background: white;
+  border: 1.5px solid rgba(200, 83, 106, 0.18);
+  border-radius: 12px;
+  padding: 2.2rem 2.5rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow:
+    0 8px 32px rgba(140, 45, 63, 0.08),
+    0 2px 8px rgba(140, 45, 63, 0.05);
+}
+
+/* Punched hole at top center */
+.footer-tag::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 22px;
+  background: var(--cream);
+  border: 2.5px solid rgba(200, 83, 106, 0.18);
+  border-top: none;
+  border-radius: 0 0 22px 22px;
+}
+
+/* String hanging from hole */
+.footer-tag::after {
+  content: "";
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.5px;
+  height: 28px;
+  background: linear-gradient(to bottom, transparent, rgba(200, 83, 106, 0.3));
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.footer-col.center {
+  align-items: center;
+  text-align: center;
+}
+.footer-col.right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.footer-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--rose);
+}
+
+.footer-value {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--rose-dk);
+  line-height: 1.3;
+}
+
+.footer-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--rose-lt);
+  font-size: 1.1rem;
+}
+
+.footer-divider-line {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(200, 83, 106, 0.25),
+    transparent
+  );
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 1.6rem;
+  position: relative;
+}
+
+.footer-bottom p {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (max-width: 600px) {
+  .footer-tag {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1.2rem;
+  }
+  .footer-col.right {
+    align-items: center;
+    text-align: center;
+  }
+  .footer-divider {
+    flex-direction: row;
+  }
+  .footer-divider-line {
+    width: 36px;
+    height: 1px;
+  }
+}
