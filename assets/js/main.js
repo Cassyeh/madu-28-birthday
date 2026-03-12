@@ -162,6 +162,7 @@
         if (item.type === 'img') {
           const el = document.createElement('img');
           el.src = item.src; el.alt = `Joy ${num} — ${i+1}`;
+          if (item.position) el.style.objectPosition = item.position;
           slide.appendChild(el);
         } else if (item.type === 'video') {
           const el = document.createElement('video');
