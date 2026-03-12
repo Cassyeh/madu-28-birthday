@@ -139,13 +139,13 @@
       try {
         if (box.dataset.media) mediaItems = JSON.parse(box.dataset.media);
       } catch(e) {}
-
+        
       // Legacy single image fallback
       if (!mediaItems.length) {
         const img = box.querySelector('.joy-thumb');
         const rawSrc = img && img.getAttribute('src');
-        if (rawSrc && rawSrc.trim() !== '') { {
-          mediaItems = [{ type: 'img', src: img.src }];
+        if (rawSrc && rawSrc.trim() !== '') {
+          mediaItems = [{ type: 'img', src: rawSrc }];
         }
       }
 
