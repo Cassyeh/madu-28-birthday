@@ -143,7 +143,8 @@
       // Legacy single image fallback
       if (!mediaItems.length) {
         const img = box.querySelector('.joy-thumb');
-        if (img && img.src && !img.src.endsWith('/') && !img.src.includes('undefined')) {
+        const rawSrc = img && img.getAttribute('src');
+        if (rawSrc && rawSrc.trim() !== '') { {
           mediaItems = [{ type: 'img', src: img.src }];
         }
       }
@@ -247,7 +248,7 @@
       if (activeBox) {
         const img = activeBox.querySelector('.joy-thumb');
         const hasMedia = activeBox.dataset.media ||
-          (img && img.src && !img.src.endsWith('/') && !img.src.includes('undefined'));
+          (img && img.getAttribute('src') && img.getAttribute('src').trim() !== '');
         if (hasMedia) activeBox.classList.add('revealed');
         activeBox = null;
       }
